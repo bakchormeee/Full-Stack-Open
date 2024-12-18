@@ -1,17 +1,30 @@
 ``` mermaid
     sequenceDiagram
-        participant User
         participant Browser
         participant Server
 
-        User ->> Browser: Click Button to Submit
-        Browser ->> Server: Send User Input (HTTP Post Request)
+        Browser ->> Server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
         activate Server
-        Server -->> Browser: HTTP Status Code 302 (URL Redirect)
+        Server -->> Browser: Redirect Webpage
         deactivate Server
 
-        Browser ->> Server: GET redirect address
+        Browser ->> Server: GET https://studies.cs.helsinki.fi/exampleapp/notes
         activate Server
-        Server -->> Browser: Webpage with form submission data made avaliable
+        Server -->> Browser: HTML File returned
+        deactivate Server
+
+        Browser ->> Server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+        activate Server
+        Server -->> Browser: CSS File Returned
+        deactivate Server
+
+        Browser ->> Server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+        activate Server
+        Server -->> Browser: JavaScript File Returned
+        deactivate Server
+
+        Browser ->> Server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+        activate Server
+        Server -->> Browser: JSON File Returned
         deactivate Server
 ```
