@@ -4,6 +4,7 @@ import Persons from './components/Persons'
 import Filter from './components/Filter'
 import axios from 'axios'
 import noteService from './services/notes'
+import Notification from './components/Notification'
 
 const serverurl = "http://localhost:3001/persons"
 
@@ -18,6 +19,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [condition, setCondition] = useState('') //set initial value
+  const [notif, setNotif] = useState(null)
 
   useEffect(() => {
     noteService.getAll()
@@ -55,10 +57,16 @@ const App = () => {
         .then(() => {
           setPersons(persons.concat(nameObject))
         })
+      setNotif(`Added ${nameObject.name}`)
+      setTimeout(() => {setNotif(null)}, 5000)
     } else {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const olditem = persons.find(person => person.name === newName)
-        noteService.update({id:olditem.id, newObject:nameObject})
+        noteService.update({id:olditem.id, newObject:nameObject}).catch((error) => {
+          setNotif(`Information of ${newName} has already been removed from server`)
+          setTimeout(() => {setNotif(null)}, 5000)
+          setPersons(persons.filter(i => i.name !== newName))
+        })
         const index = persons.indexOf(olditem)
         setPersons(persons.toSpliced(index, 1, nameObject))
       }
@@ -71,6 +79,8 @@ const App = () => {
 
   return (
     <div>
+      <h1>Notes</h1>
+      <Notification message={notif} />
       <h2>Phonebook</h2>
       <Filter condition={condition} handleConditionChange={handleConditionChange}/>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumChange={handleNumChange} />
