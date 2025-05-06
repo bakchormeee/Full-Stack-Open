@@ -9,8 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "json-server -p 3001 db.json",
-    "build:ui": "rm -rf dist && cd ../Notes Frontnend && npm run build && cp -r dist ../Notes Backend",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "dependencies": {
     "axios": "^1.7.9",
