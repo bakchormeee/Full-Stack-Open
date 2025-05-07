@@ -8,6 +8,12 @@ import Notification from './components/Notification'
 
 const dataurl = "/api/persons"
 
+const generateId = (persons) => {
+  const maxId =
+    persons.length > 0 ? Math.max(...persons.map((n) => Number(n.id))) : 0
+  return String(maxId + 1)
+}
+
 const filterPeople = ({condition, persons}) => {
   return (
     persons.filter(person => person.name.toLowerCase().includes(condition.toLowerCase()))
@@ -46,7 +52,7 @@ const App = () => {
     event.preventDefault()
     const editname = newName.toLowerCase().replace(" ", "")
     const editnumber = newNumber.toLowerCase().replace(" ","")
-    const strid = editname.concat(editnumber)
+    const strid = generateId(persons)
     const nameObject = {
       name: newName,
       number: newNumber,

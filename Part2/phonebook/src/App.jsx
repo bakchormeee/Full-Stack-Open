@@ -46,7 +46,7 @@ const App = () => {
     event.preventDefault()
     const editname = newName.toLowerCase().replace(" ", "")
     const editnumber = newNumber.toLowerCase().replace(" ","")
-    const strid = editname.concat(editnumber)
+    const strid = persons[-1].id+1
     const nameObject = {
       name: newName,
       number: newNumber,
