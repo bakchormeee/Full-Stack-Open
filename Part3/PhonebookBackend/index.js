@@ -66,17 +66,16 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   data = request.body
-  const id = Math.floor(Math.random()*1e6)
   const person = {
-    "id": String(id),
+    "id": data.id,
     "name":data.name,
     "number":data.number
   }
   if(phonebook.find(i => i.name === person.name)){
     response.statusMessage = "Name already exists in the phonebook"
     response.status(404).end()
-  } else if(!data.name || !data.number){
-    response.statusMessage = "Name or Number is missing"
+  } else if(!data.name || !data.number || !data.id){
+    response.statusMessage = "Name, Number or ID is missing"
     response.status(404).end()
   } else {
     phonebook.push(person)
