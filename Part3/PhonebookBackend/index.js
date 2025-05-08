@@ -1,6 +1,9 @@
+require("dotenv").config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const Person = require("./models/person")
+const note = require("../NotesBackend/models/note")
 app.use(express.json()) //mount this middlewear such that it applies to all routes
 app.use(express.static('dist'))
 
@@ -10,77 +13,103 @@ morgan.token('content', (req) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 
-let phonebook = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
 app.get("/api/persons", (request, response) => {
+  Person
+    .find({}).then(people => {
+      JSON.stringify(people)
+      response.json(people)
+    })
+    .catch(error => {
+      next(error)
+    })
   console.log("Phonebook sent")
-  response.json(phonebook).end()
 })
 
 app.get("/info", (request, response) => {
   const now = new Date()
-  response.send(`
-    <div>
-      <div>Phonebook has info for ${phonebook.length} people\n</div>
-      <div>${now}</div>
-    </div>`)
+  Person.find({})
+    .then(people => {
+      response.send(`
+        <div>
+          <div>Phonebook has info for ${people.length} people\n</div>
+          <div>${now}</div>
+        </div>`)
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id
-  data = phonebook.find((element) => element["id"] === id)
-  if(data){
-    response.send(data)
-  } else {
-    response.statusMessage = "Selected id out of bounds"
-    response.status(404).end()
-  }
+  Person.findById(id)
+    .then(person => {
+      JSON.stringify(person)
+      response.json(person)
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id
-  phonebook = phonebook.filter(note => note.id !== id)
-  response.status(204).end()
+  Person.findByIdAndDelete(id)
+    .then(result => {
+      console.log(`${result.name} deleted successfully`)
+      response.json(result).status(204).end()
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
+
 app.post("/api/persons", (request, response) => {
-  data = request.body
-  const person = {
-    "id": data.id,
-    "name":data.name,
-    "number":data.number
-  }
-  if(phonebook.find(i => i.name === person.name)){
-    response.statusMessage = "Name already exists in the phonebook"
-    response.status(404).end()
-  } else if(!data.name || !data.number || !data.id){
-    response.statusMessage = "Name, Number or ID is missing"
-    response.status(404).end()
-  } else {
-    phonebook.push(person)
-    response.end()
-  }
+  const data = request.body
+  Person.find({})
+    .then(people => {
+      if(!data.name || !data.number){
+        response.statusMessage = "Name or Number is missing"
+        response.status(404).end()
+      } else {
+        const person = new Person({
+          "name":data.name,
+          "number":data.number,
+        })
+        person.save().then(savedPerson => {
+          response.json(savedPerson).end()
+        })
+      }
+    })
+    .catch(error => {
+      next(error)
+    })
+})
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const data = request.body
+  console.log(JSON.stringify(data))
+  Person.findById(request.params.id)
+    .then(person => {
+      if(!person){
+        console.log("Person is invalid")
+        return response.status(404)
+      }
+
+      person.number = data.number
+
+      return person.save().then(updatedPerson => {
+        response.json(updatedPerson)
+      }).then(error => {
+        console.log("Did not manage to save person")
+        next(error)
+      })
+    })
+    .catch(error => {
+      console.log("Did not manage to find person by ID")
+      next(error)
+    })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -89,7 +118,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
