@@ -62,9 +62,17 @@ const App = () => {
       noteService.addNew({newObject:nameObject})
         .then(() => {
           setPersons(persons.concat(nameObject))
+          setNotif(`Added ${nameObject.name}`)
+          setTimeout(() => {setNotif(null)}, 5000)
         })
-      setNotif(`Added ${nameObject.name}`)
-      setTimeout(() => {setNotif(null)}, 5000)
+        .catch(error => {
+          const preTagContent = error.response.data.match(/<pre>([\s\S]*?)<\/pre>/i)[1]
+          const validationErrorText = preTagContent.split('<br>')[0]
+          const cleanedErrorText = validationErrorText.replace('ValidationError: ', '')
+          console.log(cleanedErrorText)
+          setNotif(`${cleanedErrorText}`)
+          setTimeout(() => {setNotif(null)}, 5000)
+        })
     } else {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const olditem = persons.find(person => person.name === newName)

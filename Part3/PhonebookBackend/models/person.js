@@ -14,8 +14,32 @@ mongoose.connect(url)
   })
 
 const personSchema = new mongoose.Schema({
-    "name":String,
-    "number":String,
+    "name":{
+      type: String,
+      minLength: 3,
+      required: true
+    },
+    "number":{
+      type: String,
+      minLength: 8,
+      validate: {
+        validator: (v) => {
+          const vsplit = v.split("-")
+          if(vsplit.length !== 2){
+            return false
+          } else {
+            if(vsplit[0].length !== 2 && vsplit[0].length !== 3){
+              return false
+            }
+            const regex = /^\d+$/
+            if(regex.test(vsplit[0]) === false || regex.test(vsplit[1] === false)){
+              return false
+            }
+          }
+          return true
+        }
+      }
+    }
 })
 
 personSchema.set("toJSON", {

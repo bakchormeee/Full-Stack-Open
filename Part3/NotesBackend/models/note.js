@@ -1,13 +1,11 @@
 const mongoose = require('mongoose')
-
 mongoose.set('strictQuery', false)
-
-
 const url = process.env.MONGODB_URI
+
+//mongoose automatically reads any function that takes in 4 parameters as being an errorHandler function
 
 console.log('connecting to', url)
 mongoose.connect(url)
-
   .then(result => {
     console.log('connected to MongoDB')
   })
@@ -16,7 +14,11 @@ mongoose.connect(url)
   })
 
 const noteSchema = new mongoose.Schema({
-  content: String,
+  content: {
+    type:String,
+    minLength:5,
+    required:true
+  },
   important: Boolean,
 })
 

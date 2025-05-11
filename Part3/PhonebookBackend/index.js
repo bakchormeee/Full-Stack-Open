@@ -4,6 +4,16 @@ const morgan = require('morgan')
 const app = express()
 const Person = require("./models/person")
 const note = require("../NotesBackend/models/note")
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
 app.use(express.json()) //mount this middlewear such that it applies to all routes
 app.use(express.static('dist'))
 
@@ -12,6 +22,7 @@ morgan.token('content', (req) => {
 })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
+app.use(errorHandler)
 
 app.get("/api/persons", (request, response) => {
   Person
@@ -65,7 +76,7 @@ app.delete("/api/persons/:id", (request, response) => {
 })
 
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const data = request.body
   Person.find({})
     .then(people => {
@@ -79,7 +90,7 @@ app.post("/api/persons", (request, response) => {
         })
         person.save().then(savedPerson => {
           response.json(savedPerson).end()
-        })
+        }).catch(error => {next(error)})
       }
     })
     .catch(error => {
