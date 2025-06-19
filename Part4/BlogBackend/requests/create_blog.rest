@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Man's Search for Meaning",
+  "author": "Frankl",
+  "url": "abcde",
+  "likes": 142314
+}

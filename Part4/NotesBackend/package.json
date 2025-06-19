@@ -1,0 +1,29 @@
+{
+  "name": "notebackend",
+  "version": "0.0.1",
+  "main": "index.js",
+
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "build:ui": "rm -rf dist && cd ../NotesFrontend && npm run build && cp -r dist ../NotesBackend",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "author": "Matti Luukkainen",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "cars": "^1.1.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "mongoose": "^8.14.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@stylistic/eslint-plugin-js": "^4.4.0",
+    "eslint": "^9.27.0"
+  }
+}
