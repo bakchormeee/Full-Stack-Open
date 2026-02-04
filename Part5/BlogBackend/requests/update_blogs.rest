@@ -1,0 +1,7 @@
+PUT http://localhost:3003/api/blogs/697865ebe5e52180ce6d556b
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVG9tIFRhbiIsInVzZXJuYW1lIjoibWF0aG5lcmQiLCJpZCI6IjY5NzgzYjZmZDhkY2RjODE2NWZiYzllZSIsImlhdCI6MTc2OTQ5NTExMH0.ZpVjgyTrqE7MPKaWJ_Lr58af8UOyi4Zgm1OdI-3eJmM
+
+{
+    "likes": 8
+}
