@@ -1,0 +1,9 @@
+{
+  "name": "webpack-part7",
+  "version": "0.0.1",
+  "description": "practicing webpack",
+  "scripts": {
+    "build": "webpack --mode=development"
+  },
+  "license": "MIT"
+}
